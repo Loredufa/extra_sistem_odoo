@@ -1,0 +1,29 @@
+﻿kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: extrasistemodoo-1-global-ca
+  namespace: odoo
+  uid: 089de4c1-e81e-4479-87d4-2a978ba8e9f5
+  resourceVersion: '36067889'
+  creationTimestamp: '2025-01-15T19:50:23Z'
+  ownerReferences:
+    - apiVersion: v1
+      kind: Pod
+      name: extrasistemodoo-1-build
+      uid: 05f78e32-eff4-4142-b82a-f4ab504dcbb3
+  managedFields:
+    - manager: openshift-controller-manager
+      operation: Update
+      apiVersion: v1
+      time: '2025-01-15T19:50:23Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:data':
+          .: {}
+          'f:ca-bundle.crt': {}
+        'f:metadata':
+          'f:ownerReferences':
+            .: {}
+            'k:{"uid":"05f78e32-eff4-4142-b82a-f4ab504dcbb3"}': {}
+data:
+  ca-bundle.crt: ''

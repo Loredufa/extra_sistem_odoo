@@ -1,0 +1,49 @@
+﻿kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: extrasistemodoo-1-ca
+  namespace: odoo
+  uid: e8e9f55c-5138-4b42-b9f9-37cf6bd03dfb
+  resourceVersion: '36067884'
+  creationTimestamp: '2025-01-15T19:50:23Z'
+  ownerReferences:
+    - apiVersion: v1
+      kind: Pod
+      name: extrasistemodoo-1-build
+      uid: 05f78e32-eff4-4142-b82a-f4ab504dcbb3
+  managedFields:
+    - manager: openshift-controller-manager
+      operation: Update
+      apiVersion: v1
+      time: '2025-01-15T19:50:23Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:data':
+          .: {}
+          'f:service-ca.crt': {}
+        'f:metadata':
+          'f:ownerReferences':
+            .: {}
+            'k:{"uid":"05f78e32-eff4-4142-b82a-f4ab504dcbb3"}': {}
+data:
+  service-ca.crt: |
+    -----BEGIN CERTIFICATE-----
+    MIIDUTCCAjmgAwIBAgIIMHmDEx5AxnswDQYJKoZIhvcNAQELBQAwNjE0MDIGA1UE
+    Awwrb3BlbnNoaWZ0LXNlcnZpY2Utc2VydmluZy1zaWduZXJAMTcyNjYwMTg2NzAe
+    Fw0yNDA5MTcxOTM3NDZaFw0yNjExMTYxOTM3NDdaMDYxNDAyBgNVBAMMK29wZW5z
+    aGlmdC1zZXJ2aWNlLXNlcnZpbmctc2lnbmVyQDE3MjY2MDE4NjcwggEiMA0GCSqG
+    SIb3DQEBAQUAA4IBDwAwggEKAoIBAQDCAB6KWRkOHqF3IleDQ/sEPjK3Fq6bsA4w
+    8hhSP1gORsnHkujNm+ESrWCMLc6aX9BS2/1qCUoeX+k9GP0Hkh3U3JPvDGfg/s+h
+    yw6P8O8W6J7WCjq/ZW51hZmEyhdTUyrRrwdF4VaPeGglaQySIaI9fb3Ko83kxo0E
+    Q9kZuMXDjmqsNgdNPNEY2vSoWnwcWwVF3WMYuXTw7g0Qe+pRWICsAY73tcHCr4fn
+    HussDpt+oDM01XAqyCrrZe3rZQPr7o71l7shVxLr5Jxbs6kIIbSXjYUlHsShxggl
+    24KCbAP2w2iTR87ynO9PE40QYLpmdivJ95p6JUnNldsB7gct5AdtAgMBAAGjYzBh
+    MA4GA1UdDwEB/wQEAwICpDAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBTinDbo
+    6yN+hQ3R3va4mL03j8CelzAfBgNVHSMEGDAWgBTinDbo6yN+hQ3R3va4mL03j8Ce
+    lzANBgkqhkiG9w0BAQsFAAOCAQEABT5leGM9XJcyRUGcO0JV8YmR1fjOghVLDFOg
+    jTTc1VXV1xgKpZsInKu1ePyha5A+Al2aui1PevMSfxVhAdpHRRGTxhxjzxe84dgP
+    2LSZVkqXu5XtZRuAn8ecJ7CeTKWnwxr2b01HRFPql3jCff3oHbjFVirNhi8pYSLe
+    HlVguhspAtVyHwtYWhaZOVAtkCtx02DFKTimNeNvtt2hj+Kix1SJJ1HnD7f3NCtp
+    sgN8EOoTQ8XAlgzfQDFeA51Ez0TBJ358Cvq6N+YKR8Nz6BmZozDoHK+uZ5+/XMlF
+    QrB955uuO69pEmiD7tuIztCytutfrs+HtBpO2Mi3a54CKb9IEA==
+    -----END CERTIFICATE-----

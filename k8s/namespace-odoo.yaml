@@ -1,0 +1,73 @@
+﻿kind: Namespace
+apiVersion: v1
+metadata:
+  name: odoo
+  uid: b0a7597f-5ad5-437d-a7a5-cacaff9871a9
+  resourceVersion: '56295843'
+  creationTimestamp: '2025-01-15T19:38:38Z'
+  labels:
+    kubernetes.io/metadata.name: odoo
+    pod-security.kubernetes.io/audit: restricted
+    pod-security.kubernetes.io/audit-version: v1.24
+    pod-security.kubernetes.io/warn: restricted
+    pod-security.kubernetes.io/warn-version: v1.24
+  annotations:
+    openshift.io/description: ''
+    openshift.io/display-name: ''
+    openshift.io/requester: focus-admin
+    openshift.io/sa.scc.mcs: 's0:c26,c25'
+    openshift.io/sa.scc.supplemental-groups: 1000700000/10000
+    openshift.io/sa.scc.uid-range: 1000700000/10000
+  managedFields:
+    - manager: pod-security-admission-label-synchronization-controller
+      operation: Apply
+      apiVersion: v1
+      time: '2025-02-19T18:48:26Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:metadata':
+          'f:labels':
+            'f:pod-security.kubernetes.io/audit': {}
+            'f:pod-security.kubernetes.io/audit-version': {}
+            'f:pod-security.kubernetes.io/warn': {}
+            'f:pod-security.kubernetes.io/warn-version': {}
+    - manager: cluster-policy-controller
+      operation: Update
+      apiVersion: v1
+      time: '2025-01-15T19:38:38Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:metadata':
+          'f:annotations':
+            'f:openshift.io/sa.scc.mcs': {}
+            'f:openshift.io/sa.scc.supplemental-groups': {}
+            'f:openshift.io/sa.scc.uid-range': {}
+    - manager: openshift-apiserver
+      operation: Update
+      apiVersion: v1
+      time: '2025-01-15T19:38:38Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:metadata':
+          'f:annotations':
+            .: {}
+            'f:openshift.io/description': {}
+            'f:openshift.io/display-name': {}
+            'f:openshift.io/requester': {}
+          'f:labels':
+            .: {}
+            'f:kubernetes.io/metadata.name': {}
+    - manager: openshift-controller-manager
+      operation: Update
+      apiVersion: v1
+      time: '2025-01-15T19:38:38Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:spec':
+          'f:finalizers': {}
+      subresource: finalize
+spec:
+  finalizers:
+    - kubernetes
+status:
+  phase: Active

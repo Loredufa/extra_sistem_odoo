@@ -5,51 +5,160 @@ const {odoo_db, odoo_url, odoo_api_key} = require('../utils/config/index')
 
 //Crear producto en Odoo
 const create_product = async (req, res) => {
-
-    const { name, price, type } = req.body;
-
-    // Validar datos de entrada
-    if (!name || !price) {
-        return res.status(400).json({ error: 'Faltan datos obligatorios: name, price' });
+    // Datos del producto y del proveedor (se espera que se envíe el ID del proveedor)
+    const { name, price, type, supplier_id } = req.body;
+    console.log('soy el BODY', req.body);
+    
+    // Validar datos obligatorios
+    if (!name || !price || !supplier_id) {
+        return res.status(400).json({ error: 'Faltan datos obligatorios: name, price y supplier_id' });
     }
 
-    const payload = {
-        jsonrpc: '2.0',
-        method: 'call',
-        params: {
-            service: 'object',
-            method: 'execute_kw',
-            args: [
-                odoo_db,              // Base de datos
-                2,                    // ID del usuario (Admin)
-                odoo_api_key,         // API Key del usuario
-                'product.product',    // Modelo de Odoo
-                'create',             // Método del modelo
-                [{
-                    name: name,
-                    list_price: price,
-                    type: type || 'consu',  // Tipo de producto (por defecto: consumible)
-                    //default_code: code || '', // Código interno (opcional)
-                }],
-            ],
-        },
-        id: 1,
-    };
+    // Convertir price a número
+    const numericPrice = parseFloat(price);
+    if (isNaN(numericPrice)) {
+        return res.status(400).json({ error: 'El valor de price no es válido.' });
+    }
+
     try {
-        const response = await axios.post(`${odoo_url}/jsonrpc`, payload, {
+        // 1. Verificar que el proveedor exista en Odoo.
+        const supplierSearchPayload = {
+            jsonrpc: '2.0',
+            method: 'call',
+            params: {
+                service: 'object',
+                method: 'execute_kw',
+                args: [
+                    odoo_db,
+                    2,
+                    odoo_api_key,
+                    'res.partner',
+                    'search_read',
+                    [
+                        [
+                            ['id', '=', parseInt(supplier_id)],
+                            ['supplier_rank', '>', 0]
+                        ],
+                        ['id']
+                    ],
+                ],
+            },
+            id: 1,
+        };
+
+        const supplierSearchResponse = await axios.post(`${odoo_url}/jsonrpc`, supplierSearchPayload, {
             headers: { 'Content-Type': 'application/json' },
         });
-        // Procesa respuesta de Odoo
-        if (response.data.result) {
-            res.json({ success: true, product_id: response.data.result });
-        } else {
-            res.status(500).json({ error: 'Error al crear el producto en Odoo.' });
+
+        if (!supplierSearchResponse.data.result || supplierSearchResponse.data.result.length === 0) {
+            return res.status(404).json({ error: 'El proveedor no existe.' });
         }
+
+        // 2. Crear el producto en Odoo (modelo 'product.product')
+        const productPayload = {
+            jsonrpc: '2.0',
+            method: 'call',
+            params: {
+                service: 'object',
+                method: 'execute_kw',
+                args: [
+                    odoo_db,
+                    2,
+                    odoo_api_key,
+                    'product.product',
+                    'create',
+                    [{
+                        name: name,
+                        list_price: numericPrice,
+                        type: type || 'consu',
+                    }],
+                ],
+            },
+            id: 2,
+        };
+
+        const productResponse = await axios.post(`${odoo_url}/jsonrpc`, productPayload, {
+            headers: { 'Content-Type': 'application/json' },
+        });
+
+        if (!productResponse.data.result) {
+            return res.status(500).json({ error: 'Error al crear el producto en Odoo.' });
+        }
+        const productId = productResponse.data.result;
+
+        // 3. Obtener el ID del product template (necesario para crear la relación en product.supplierinfo)
+        const productReadPayload = {
+            jsonrpc: '2.0',
+            method: 'call',
+            params: {
+                service: 'object',
+                method: 'execute_kw',
+                args: [
+                    odoo_db,
+                    2,
+                    odoo_api_key,
+                    'product.product',
+                    'read',
+                    [[parseInt(productId)], ['product_tmpl_id']],
+                ],
+            },
+            id: 3,
+        };
+
+        const productReadResponse = await axios.post(`${odoo_url}/jsonrpc`, productReadPayload, {
+            headers: { 'Content-Type': 'application/json' },
+        });
+
+        if (!productReadResponse.data.result || productReadResponse.data.result.length === 0) {
+            return res.status(500).json({ error: 'No se pudo obtener el template del producto.' });
+        }
+        const productTemplateId = productReadResponse.data.result[0].product_tmpl_id[0];
+
+        // 4. Crear la relación entre el producto y el proveedor en el modelo 'product.supplierinfo'
+        const supplierinfoPayload = {
+            jsonrpc: '2.0',
+            method: 'call',
+            params: {
+                service: 'object',
+                method: 'execute_kw',
+                args: [
+                    odoo_db,
+                    2,
+                    odoo_api_key,
+                    'product.supplierinfo',
+                    'create',
+                    [{
+                        product_tmpl_id: productTemplateId,
+                        name: parseInt(supplier_id),
+                        delay: 0,
+                        min_qty: 1,
+                        price: numericPrice,
+                    }],
+                ],
+            },
+            id: 4,
+        };
+
+        const supplierinfoResponse = await axios.post(`${odoo_url}/jsonrpc`, supplierinfoPayload, {
+            headers: { 'Content-Type': 'application/json' },
+        });
+
+        if (!supplierinfoResponse.data.result) {
+            return res.status(500).json({ error: 'Producto creado, pero error al vincular el proveedor.' });
+        }
+
+        return res.json({
+            success: true,
+            product_id: productId,
+            supplierinfo_id: supplierinfoResponse.data.result,
+        });
     } catch (error) {
         console.error('Error al conectar con Odoo:', error.message);
-        res.status(500).json({ error: 'Error al conectar con Odoo.' });
-    }   
-}
+        return res.status(500).json({ error: 'Error al conectar con Odoo.' });
+    }
+};
+
+
 
 const get_all_products = async (req, res) => {
     const payload = {
